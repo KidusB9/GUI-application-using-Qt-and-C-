@@ -1,0 +1,37 @@
+QAction *openAct = new QAction(tr("Open"), this);
+openAct->setShortcut(QKeySequence::Open);
+connect(openAct, &QAction::triggered, this, &MainWindow::openFile);
+fileMenu->addAction(openAct);
+
+QAction *saveAct = new QAction(tr("Save"), this);
+saveAct->setShortcut(QKeySequence::Save);
+connect(saveAct, &QAction::triggered, this, &MainWindow::saveFile);
+fileMenu->addAction(saveAct);
+
+QAction *saveAsAct = new QAction(tr("Save As..."), this);
+saveAsAct->setShortcut(QKeySequence::SaveAs);
+connect(saveAsAct, &QAction::triggered, this, &MainWindow::saveFileAs);
+fileMenu->addAction(saveAsAct);
+
+fileMenu->addSeparator();
+
+QAction *printAct = new QAction(tr("Print"), this);
+printAct->setShortcut(QKeySequence::Print);
+connect(printAct, &QAction::triggered, this, &MainWindow::printFile);
+fileMenu->addAction(printAct);
+
+fileMenu->addSeparator();
+
+QAction *exitAct = new QAction(tr("Exit"), this);
+exitAct->setShortcut(QKeySequence::Quit);
+connect(exitAct, &QAction::triggered, this, &MainWindow::close);
+fileMenu->addAction(exitAct);
+
+QMenu *editMenu = menuBar()->addMenu(tr("Edit"));
+QAction *undoAct = textEdit->document()->createUndoAction(this, tr("Undo"));
+undoAct->setShortcut(QKeySequence::Undo);
+editMenu->addAction(undoAct);
+
+QAction *redoAct = textEdit->document()->createRedoAction(this, tr("Redo"));
+redoAct->setShortcut(QKeySequence::Redo);
+editMenu->addAction(redoAct);
