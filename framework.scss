@@ -35,3 +35,122 @@ editMenu->addAction(undoAct);
 QAction *redoAct = textEdit->document()->createRedoAction(this, tr("Redo"));
 redoAct->setShortcut(QKeySequence::Redo);
 editMenu->addAction(redoAct);
+editMenu->addSeparator();
+
+QAction *cutAct = new QAction(tr("Cut"), this);
+cutAct->setShortcut(QKeySequence::Cut);
+connect(cutAct, &QAction::triggered, textEdit, &QTextEdit::cut);
+editMenu->addAction(cutAct);
+
+QAction *copyAct = new QAction(tr("Copy"), this);
+copyAct->setShortcut(QKeySequence::Copy);
+connect(copyAct, &QAction::triggered, textEdit, &QTextEdit::copy);
+editMenu->addAction(copyAct);
+
+QAction *pasteAct = new QAction(tr("Paste"), this);
+pasteAct->setShortcut(QKeySequence::Paste);
+connect(pasteAct, &QAction::triggered, textEdit, &QTextEdit::paste);
+editMenu->addAction(pasteAct);
+
+editMenu->addSeparator();
+
+QAction *selectAllAct = new QAction(tr("Select All"), this);
+selectAllAct->setShortcut(QKeySequence::SelectAll);
+connect(selectAllAct, &QAction::triggered, textEdit, &QTextEdit::selectAll);
+editMenu->addAction(selectAllAct);
+
+QMenu *searchMenu = menuBar()->addMenu(tr("Search"));
+QAction *searchAct = new QAction(tr("Search..."), this);
+searchAct->setShortcut(QKeySequence::Find);
+connect(searchAct, &QAction::triggered, this, &MainWindow::search);
+searchMenu->addAction(searchAct);
+
+QMenu *helpMenu = menuBar()->addMenu(tr("Help"));
+QAction *aboutAct = new QAction(tr("About"), this);
+connect(aboutAct, &QAction::triggered, this, &MainWindow::about);
+helpMenu->addAction(aboutAct);
+}
+
+void MainWindow::createToolBar() {
+QToolBar *fileToolBar = addToolBar(tr("File"));
+fileToolBar->setMovable(false);
+QAction *newAct = new QAction(QIcon(":/icons/new.png"), tr("New"), this);
+newAct->setShortcut(QKeySequence::New);
+connect(newAct, &QAction::triggered, this, &MainWindow::newFile);
+fileToolBar->addAction(newAct);
+
+QAction *openAct = new QAction(QIcon(":/icons/open.png"), tr("Open"), this);
+openAct->setShortcut(QKeySequence::Open);
+connect(openAct, &QAction::triggered, this, &MainWindow::openFile);
+fileToolBar->addAction(openAct);
+
+QAction *saveAct = new QAction(QIcon(":/icons/save.png"), tr("Save"), this);
+saveAct->setShortcut(QKeySequence::Save);
+connect(saveAct, &QAction::triggered, this, &MainWindow::saveFile);
+fileToolBar->addAction(saveAct);
+
+fileToolBar->addSeparator();
+
+QToolBar *editToolBar = addToolBar(tr("Edit"));
+editToolBar->setMovable(false);
+
+QAction *undoAct = textEdit->document()->createUndoAction(this, tr("Undo"));
+undoAct->setIcon(QIcon(":/icons/undo.png"));
+undoAct->setShortcut(QKeySequence::Undo);
+editToolBar->addAction(undoAct);
+
+QAction *redoAct = textEdit->document()->createRedoAction(this, tr("Redo"));
+redoAct->setIcon(QIcon(":/icons/redo.png"));
+redoAct->setShortcut(QKeySequence::Redo);
+editToolBar->addAction(redoAct);
+
+editToolBar->addSeparator();
+
+QAction *cutAct = new QAction(QIcon(":/icons/cut.png"), tr("Cut"), this);
+cutAct->setShortcut(QKeySequence::Cut);
+connect(cutAct, &QAction::triggered, textEdit, &QTextEdit::cut);
+editToolBar->addAction(cutAct);
+QAction *copyAct = new QAction(QIcon(":/icons/copy.png"), tr("Copy"), this);
+copyAct->setShortcut(QKeySequence::Copy);
+connect(copyAct, &QAction::triggered, textEdit, &QTextEdit::copy);
+editToolBar->addAction(copyAct);
+
+QAction *pasteAct = new QAction(QIcon(":/icons/paste.png"), tr("Paste"), this);
+pasteAct->setShortcut(QKeySequence::Paste);
+connect(pasteAct, &QAction::triggered, textEdit, &QTextEdit::paste);
+editToolBar->addAction(pasteAct);
+
+editToolBar->addSeparator();
+
+QAction *selectAllAct = new QAction(QIcon(":/icons/selectAll.png"), tr("Select All"), this);
+selectAllAct->setShortcut(QKeySequence::SelectAll);
+connect(selectAllAct, &QAction::triggered, textEdit, &QTextEdit::selectAll);
+editToolBar->addAction(selectAllAct);
+}
+
+void MainWindow::newFile() {
+if (maybeSave()) {
+textEdit->clear();
+setCurrentFile("");
+}
+}
+
+void MainWindow::openFile() {
+if (maybeSave()) {
+QString fileName = QFileDialog::getOpenFileName(this);
+if (!fileName.isEmpty())
+loadFile(fileName);
+}
+}
+
+bool MainWindow::saveFile() {
+if (curFile.isEmpty())
+return saveAs();
+else
+return saveFile(curFile);
+}
+
+bool MainWindow::saveAs() {
+QString fileName = QFileDialog::getSaveFileName(this);
+if (fileName.isEmpty())
+return false;
