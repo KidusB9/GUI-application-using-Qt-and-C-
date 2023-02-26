@@ -1,0 +1,15 @@
+    // Create a menu bar
+    createMenuBar();
+
+    // Create a tool bar
+    createToolBar();
+
+    // Create a status bar
+    createStatusBar();
+
+    // Create a central widget
+    createCentralWidget();
+
+    // Set the initial window position
+    move(QApplication::desktop()->availableGeometry().center() - rect().center());
+}
