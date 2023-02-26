@@ -1,0 +1,57 @@
+QTextStream in(&file);
+QApplication::setOverrideCursor(Qt::WaitCursor);
+textEdit->setPlainText(in.readAll());
+QApplication::restoreOverrideCursor();
+
+setCurrentFile(fileName);
+statusBar()->showMessage(tr("File loaded"), 2000);
+}
+
+void MainWindow::setCurrentFile(const QString &fileName) {
+curFile = fileName;
+textEdit->document()->setModified(false);
+setWindowFilePath(curFile);
+}
+
+void MainWindow::search() {
+QDialog *searchDialog = new QDialog(this);
+searchDialog= new QDialog(this);
+searchDialog->setWindowTitle(tr("Search"));
+QVBoxLayout *searchLayout = new QVBoxLayout(searchDialog);
+QHBoxLayout *searchBarLayout = new QHBoxLayout();
+
+QLineEdit *searchBar = new QLineEdit();
+QPushButton *searchButton = new QPushButton(tr("Search"));
+
+searchBarLayout->addWidget(searchBar);
+searchBarLayout->addWidget(searchButton);
+
+QCheckBox *matchCaseCheckBox = new QCheckBox(tr("Match Case"));
+QCheckBox *wholeWordCheckBox = new QCheckBox(tr("Whole Words"));
+
+searchLayout->addLayout(searchBarLayout);
+searchLayout->addWidget(matchCaseCheckBox);
+searchLayout->addWidget(wholeWordCheckBox);
+
+connect(searchButton, &QPushButton::clicked, [=]() {
+    QTextDocument::FindFlags flags;
+
+    if (matchCaseCheckBox->isChecked()) {
+        flags |= QTextDocument::FindCaseSensitively;
+    }
+
+    if (wholeWordCheckBox->isChecked()) {
+        flags |= QTextDocument::FindWholeWords;
+    }
+
+    if (!textEdit->find(searchBar->text(), flags)) {
+        QMessageBox::warning(this, tr("Text Editor"), tr("Cannot find \"%1\"").arg(searchBar->text()));
+    }
+});
+
+searchDialog->show();
+}
+
+void MainWindow::about() {
+QMessageBox::about(this, tr("About Text Editor"), tr("Text Editor is a simple text editor written in C++ using the Qt framework."));
+}
