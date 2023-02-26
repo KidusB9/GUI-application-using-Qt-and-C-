@@ -1,0 +1,25 @@
+if (!file.open(QFile::WriteOnly | QFile::Text)) {
+    QMessageBox::warning(this, tr("Text Editor"), tr("Cannot write file %1:\n%2.").arg(fileName).arg(file.errorString()));
+    return false;
+}
+
+QTextStream out(&file);
+QApplication::setOverrideCursor(Qt::WaitCursor);
+out << textEdit->toPlainText();
+QApplication::restoreOverrideCursor();
+
+setCurrentFile(fileName);
+statusBar()->showMessage(tr("File saved"), 2000);
+return true;
+}
+
+bool MainWindow::maybeSave() {
+if (textEdit->document()->isModified()) {
+QMessageBox::StandardButton ret;
+ret = QMessageBox::warning(this, tr("Text Editor"), tr("The document has been modified.\nDo you want to save your changes?"),
+QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+if (ret == QMessageBox::Save)
+return saveFile();
+else if (ret == QMessageBox::Cancel)
+return false;
+}
