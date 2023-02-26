@@ -1,0 +1,85 @@
+    aboutAct = new QAction(tr("&About"), this);
+    aboutAct->setStatusTip(tr("Show the application's About box"));
+    connect(aboutAct, &QAction::triggered, this, &TextEditor::about);
+
+    cutAct = new QAction(QIcon(":/images/cut.png"), tr("Cu&t"), this);
+    cutAct->setShortcuts(QKeySequence::Cut);
+    cutAct->setStatusTip(tr("Cut the current selection's contents to the clipboard"));
+    connect(cutAct, &QAction::triggered, textEdit, &QTextEdit::cut);
+
+    copyAct = new QAction(QIcon(":/images/copy.png"), tr("&Copy"), this);
+    copyAct->setShortcuts(QKeySequence::Copy);
+    copyAct->setStatusTip(tr("Copy the current selection's contents to the clipboard"));
+    connect(copyAct, &QAction::triggered, textEdit, &QTextEdit::copy);
+
+    pasteAct = new QAction(QIcon(":/images/paste.png"), tr("&Paste"), this);
+    pasteAct->setShortcuts(QKeySequence::Paste);
+    pasteAct->setStatusTip(tr("Paste the clipboard's contents into the current selection"));
+    connect(pasteAct, &QAction::triggered, textEdit, &QTextEdit::paste);
+}
+
+void createMenus() {
+    fileMenu = menuBar()->addMenu(tr("&File"));
+    fileMenu->addAction(newAct);
+    fileMenu->addAction(openAct);
+    fileMenu->addAction(saveAct);
+    fileMenu->addAction(saveAsAct);
+    fileMenu->addSeparator();
+    fileMenu->addAction(exitAct);
+
+    editMenu = menuBar()->addMenu(tr("&Edit"));
+    editMenu->addAction(cutAct);
+    editMenu->addAction(copyAct);
+    editMenu->addAction(pasteAct);
+
+    helpMenu = menuBar()->addMenu(tr("&Help"));
+    helpMenu->addAction(aboutAct);
+}
+
+void createToolBars() {
+    fileToolBar = addToolBar(tr("File"));
+    fileToolBar->addAction(newAct);
+    fileToolBar->addAction(openAct);
+    fileToolBar->addAction(saveAct);
+
+    editToolBar = addToolBar(tr("Edit"));
+    editToolBar->addAction(cutAct);
+    editToolBar->addAction(copyAct);
+    editToolBar->addAction(pasteAct);
+}
+
+void createStatusBar() {
+    statusBar()->showMessage(tr("Ready"));
+}
+
+void createDockWidget() {
+    dockWidget = new QDockWidget(tr("Document Statistics"), this);
+    dockWidget->setAllowedAreas(Qt::BottomDockWidgetArea);
+    addDockWidget(Qt::BottomDockWidgetArea, dockWidget);
+
+    QLabel *lineCountLabel = new QLabel(tr("Line Count:"));
+    QLabel *wordCountLabel = new QLabel(tr("Word Count:"));
+    QLabel *charCountLabel = new QLabel(tr("Character Count:"));
+
+    lineCount = new QLabel("0");
+    wordCount = new QLabel("0");
+    charCount = new QLabel("0");
+
+    dockWidgetContents = new QWidget;
+    QVBoxLayout *dockWidgetLayout = new QVBoxLayout;
+    dockWidgetLayout->addWidget(lineCountLabel);
+    dockWidgetLayout->addWidget(lineCount);
+    dockWidgetLayout->addWidget(wordCountLabel);
+    dockWidgetLayout->addWidget(wordCount);
+    dockWidgetLayout->addWidget(charCountLabel);
+    dockWidgetLayout->addWidget(charCount);
+    dockWidgetContents->setLayout(dockWidgetLayout);
+    dockWidget->setWidget(dockWidgetContents);
+}
+void loadFile(const QString &fileName) {
+QFile file(fileName);
+if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+QMessageBox::warning(this, tr("Error"), tr("Cannot open file %1:\n%2.").arg(fileName).arg(file.errorString()));
+return;
+}
+void loadFile
