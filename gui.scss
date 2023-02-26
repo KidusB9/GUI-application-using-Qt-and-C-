@@ -1,0 +1,101 @@
+    QTextStream in(&file);
+    textEdit->setPlainText(in.readAll());
+
+    file.close();
+
+    // Update document statistics
+    updateStatistics();
+}
+
+void updateStatistics() {
+    QString text = textEdit->toPlainText();
+
+    // Count the number of lines
+    int lineCountValue = 0;
+    QTextStream lineCountStream(&text);
+    while (!lineCountStream.atEnd()) {
+        lineCountStream.readLine();
+        lineCountValue++;
+    }
+    lineCount->setText(QString::number(lineCountValue));
+
+    // Count the number of words
+    int wordCountValue = 0;
+    QTextStream wordCountStream(&text);
+    while (!wordCountStream.atEnd()) {
+        QString line = wordCountStream.readLine();
+        wordCountValue += line.split(" ", QString::SkipEmptyParts).count();
+    }
+    wordCount->setText(QString::number(wordCountValue));
+
+    // Count the number of characters
+    int charCountValue = text.length();
+    charCount->setText(QString::number(charCountValue));
+}
+
+void newFile() {
+    currentFile.clear();
+    textEdit->setText(QString());
+}
+
+bool saveFile() {
+    if (currentFile.isEmpty()) {
+        return saveFileAs();
+    } else {
+        return saveToFile(currentFile);
+    }
+}
+
+bool saveFileAs() {
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File As"), QString(), tr("Text Files (*.txt);;All Files (*)"));
+    if (fileName.isEmpty()) {
+        return false;
+    } else {
+        return saveToFile(fileName);
+    }
+}
+
+bool saveToFile(const QString &fileName) {
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QMessageBox::warning(this, tr("Error"), tr("Cannot write file %1:\n%2.").arg(fileName).arg(file.errorString()));
+        return false;
+    }
+
+    QTextStream out(&file);
+    out << textEdit->toPlainText();
+
+    file.close();
+    setCurrentFile(fileName);
+
+    return true;
+}
+
+void setCurrentFile(const QString &fileName) {
+    currentFile = fileName;
+    textEdit->document()->setModified(false);
+    setWindowFilePath(currentFile);
+    setWindowTitle(QString("%1 - %2").arg(currentFile, tr("Text Editor")));
+}
+
+void about() {
+    QMessageBox::about(this, tr("About Text Editor"), tr("Text Editor is a simple text editor written in C++ using the Qt framework."));
+}
+// Define a custom button for searching
+class SearchButton : public QPushButton {
+public:
+SearchButton(QWidget *parent = nullptr) : QPushButton(parent) {
+setIcon(QIcon(":/icons/search.png"));
+setToolTip(tr("Search"));
+setFixedSize(20, 20);
+}
+};
+
+class MainWindow : public QMainWindow {
+Q_OBJECT
+
+public:
+MainWindow(QWidget *parent = nullptr) : QMainWindow(parent) {
+setWindowTitle(tr("Text Editor"));
+setWindowIcon(QIcon(":/icons/text-editor.png"));
+resize(800, 600);
